@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { HttpResponse } from 'src/_shared/HttpResponse';
 import * as bcrypt from 'bcrypt';
+import { Tenant } from 'src/tenant/entities/tenant.entity';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,7 @@ export class UsersService {
   ) {}
 
   async findUserByEmail(email: string): Promise<User | null> {
-    return this.userRepo.findOne({ where: { email } });
+    return this.userRepo.findOne({ where: { email }, relations: ['tenant'] });
   }
 
   async registerUser(registerUserDto: CreateUserDto): Promise<HttpResponse> {
@@ -43,5 +44,18 @@ export class UsersService {
       message: 'user created successfully',
       data: await this.userRepo.save(user),
     };
+  }
+
+  async getTenantByUserId(id: string): Promise<Tenant | null> {
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: ['tenant'],
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user?.tenant;
   }
 }
