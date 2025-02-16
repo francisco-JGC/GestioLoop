@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { User } from './user.entity';
 import { Branch } from 'src/branch/entities/branch.entity';
 import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
-import { BaseUser } from './base-user';
+import { BaseUser } from './base-user.entity';
 
 @Entity('external_users')
 export class ExternalUser extends BaseUser {
