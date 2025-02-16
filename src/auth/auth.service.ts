@@ -7,6 +7,8 @@ import { ExternalUsersService } from 'src/users/services/external-user.service';
 import { ExternalUser } from 'src/users/entities/external-user.entity';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { HttpResponse } from 'src/_shared/HttpResponse';
+import { UserTypes } from 'src/_shared/constants/user-types.enums';
+import { Tenant } from 'src/tenant/entities/tenant.entity';
 
 @Injectable()
 export class AuthService {
@@ -38,7 +40,25 @@ export class AuthService {
   }
 
   async login(user: User): Promise<HttpResponse> {
-    const payload = { id: user.id, email: user.email, role: user.role };
+    let tenant: Tenant | null;
+
+    if (user.user_type === UserTypes.INTERNAL) {
+      tenant = await this.userService.getTenantByUserId(user.id);
+    }
+
+    tenant = await this.externalUserService.getTenantByUserId(user.id);
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      user_role: user.user_role,
+      user_type: user.user_type,
+      tenant,
+    };
+
+    console.log({ user, tenant });
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Welcome to GestioLoop',
