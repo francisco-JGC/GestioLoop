@@ -8,7 +8,7 @@ import {
 import { Tenant } from 'src/tenant/entities/tenant.entity';
 import { ExternalUser } from './external-user.entity';
 import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
-import { BaseUser } from './base-user';
+import { BaseUser } from './base-user.entity';
 
 @Entity('users')
 export class User extends BaseUser {
