@@ -39,7 +39,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<HttpResponse> {
+  async login(user: User): Promise<{ access_token: string }> {
     let tenant: Tenant | null;
 
     if (user.user_type === UserTypes.INTERNAL) {
@@ -57,14 +57,8 @@ export class AuthService {
       tenant,
     };
 
-    console.log({ user, tenant });
-
     return {
-      statusCode: HttpStatus.OK,
-      message: 'Welcome to GestioLoop',
-      data: {
-        access_token: this.jwtService.sign(payload),
-      },
+      access_token: this.jwtService.sign(payload),
     };
   }
 
@@ -75,6 +69,12 @@ export class AuthService {
       return user;
     }
 
-    return await this.login(user.data);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '',
+      data: {
+        user: user.data,
+      },
+    };
   }
 }
