@@ -27,10 +27,10 @@ export abstract class BaseUser extends BaseEntity {
   email: string;
 
   @Column({ type: 'enum', enum: UserRole })
-  role: UserRole;
+  user_role: UserRole;
 
   @Column({ type: 'enum', enum: UserTypes })
-  type: UserTypes;
+  user_type: UserTypes;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

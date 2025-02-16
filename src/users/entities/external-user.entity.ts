@@ -20,12 +20,12 @@ export class ExternalUser extends BaseUser {
     enum: UserRole,
     default: UserRole.STAFF,
   })
-  role: UserRole.STAFF;
+  user_role: UserRole.STAFF;
 
   @Column({
     type: 'enum',
     enum: UserTypes,
     default: UserTypes.EXTERNAL,
   })
-  type: UserTypes.EXTERNAL;
+  user_type: UserTypes.EXTERNAL;
 }

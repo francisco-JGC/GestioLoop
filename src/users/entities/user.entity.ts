@@ -4,6 +4,7 @@ import {
   Column,
   OneToMany,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Tenant } from 'src/tenant/entities/tenant.entity';
 import { ExternalUser } from './external-user.entity';
@@ -16,6 +17,7 @@ export class User extends BaseUser {
   id: string;
 
   @OneToOne(() => Tenant, (tenant) => tenant.id)
+  @JoinColumn()
   tenant: Tenant;
 
   @OneToMany(() => ExternalUser, (externalUser) => externalUser.user)
@@ -25,8 +27,8 @@ export class User extends BaseUser {
   // auditLogs: AuditLog[];
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.SUPER_ADMIN })
-  role: UserRole.SUPER_ADMIN;
+  user_role: UserRole.SUPER_ADMIN;
 
   @Column({ type: 'enum', enum: UserTypes, default: UserTypes.INTERNAL })
-  type: UserTypes.INTERNAL;
+  user_type: UserTypes.INTERNAL;
 }
