@@ -1,29 +1,32 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
+  Column,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
-import { Role } from 'src/roles/entities/role.entity';
+import { Tenant } from 'src/tenant/entities/tenant.entity';
+import { ExternalUser } from './external-user.entity';
+import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
+import { BaseUser } from './base-user';
 
 @Entity('users')
-export class User {
+export class User extends BaseUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  username: string;
+  @OneToOne(() => Tenant, (tenant) => tenant.id)
+  tenant: Tenant;
 
-  @Column({ unique: true })
-  email: string;
+  @OneToMany(() => ExternalUser, (externalUser) => externalUser.user)
+  external_users: ExternalUser[];
 
-  @Column()
-  @Exclude()
-  password: string;
+  // @OneToMany(() => AuditLog, (auditLog) => auditLog.user)
+  // auditLogs: AuditLog[];
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable()
-  roles: Role[];
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.SUPER_ADMIN })
+  role: UserRole.SUPER_ADMIN;
+
+  @Column({ type: 'enum', enum: UserTypes, default: UserTypes.INTERNAL })
+  type: UserTypes.INTERNAL;
 }
