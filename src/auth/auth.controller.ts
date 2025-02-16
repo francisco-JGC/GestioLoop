@@ -44,4 +44,19 @@ export class AuthController {
   checkSession(@Request() req) {
     return { authenticated: true, user: req.user };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      expires: new Date(0),
+    });
+
+    res
+      .status(HttpStatus.OK)
+      .send({ message: 'successful logout', statusCode: HttpStatus.OK });
+  }
 }
