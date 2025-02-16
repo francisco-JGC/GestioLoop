@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { TenantMiddleware } from './middlewares/tenant.middleware';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
     .setTitle('GestioLoop')
@@ -18,24 +18,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  app.enableCors();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  app.use(cookieParser());
 
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'http://localhost', // to test with localhost
-        'https://gestioloop.com', // to test with the main domain
-        'https://www.gestioloop.com', // to test with the main domain
+        'http://localhost',
+        'https://gestioloop.com',
+        'https://www.gestioloop.com',
       ];
 
-      // to allow requests with no origin (like Postman or CURL requests)
       if (!origin) {
         return callback(null, true);
       }
@@ -52,11 +44,17 @@ async function bootstrap() {
 
       return callback(new Error('Not allowed by CORS'));
     },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow only these methods
-    credentials: true, // Allow cookies and other credentials to be sent
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
-  // app.use(new TenantMiddleware().use);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   await app.listen(8080);
 }
