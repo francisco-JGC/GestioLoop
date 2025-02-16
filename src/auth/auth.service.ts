@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/services/users.service';
 import { ExternalUsersService } from 'src/users/services/external-user.service';
 import { ExternalUser } from 'src/users/entities/external-user.entity';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { HttpResponse } from 'src/_shared/HttpResponse';
 
 @Injectable()
 export class AuthService {
@@ -35,12 +37,24 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
+  async login(user: User): Promise<HttpResponse> {
     const payload = { id: user.id, email: user.email, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      statusCode: HttpStatus.OK,
+      message: 'Welcome to GestioLoop',
+      data: {
+        access_token: this.jwtService.sign(payload),
+      },
     };
   }
 
-  async registerUser() {}
+  async registerUser(registerUserDto: CreateUserDto): Promise<HttpResponse> {
+    const user = await this.userService.registerUser(registerUserDto);
+
+    if (user.statusCode !== HttpStatus.OK) {
+      return user;
+    }
+
+    return await this.login(user.data);
+  }
 }
