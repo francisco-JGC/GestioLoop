@@ -21,48 +21,82 @@ export class TenantService {
     userId: string,
     tenantConf: ConfigureTenantDto,
   ): Promise<HttpResponse> {
-    const user = await this.userService.getUserById(userId);
+    const queryRunner = this.tenantRepo.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (!user) {
-      return {
-        statusCode: HttpStatus.NOT_FOUND,
-        message: 'User not found',
-      };
-    }
+    try {
+      const user = await this.userService.getUserById(userId);
 
-    if (user.tenant) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message: 'You already have a tenant',
-      };
-    }
+      if (!user) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+        };
+      }
 
-    const tenantFound = await this.tenantRepo.findOne({
-      where: { subdomain: tenantConf.subdomain },
-    });
+      if (user.tenant) {
+        return {
+          statusCode: HttpStatus.CONFLICT,
+          message: 'You already have a tenant',
+        };
+      }
 
-    if (tenantFound) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message:
-          'A tenant already exists with this subdomain, change the business name',
-      };
-    }
+      const tenantFound = await this.tenantRepo.findOne({
+        where: { subdomain: tenantConf.subdomain },
+      });
 
-    const tenant = this.tenantRepo.create({ ...tenantConf, currencies: [] });
+      if (tenantFound) {
+        return {
+          statusCode: HttpStatus.CONFLICT,
+          message: `The subdomain '${tenantConf.subdomain}' is already in use. Please choose a different subdomain.`,
+        };
+      }
 
-    for (const currency of tenantConf.currencies) {
-      const savedCurrency = await this.currencyService.createCurrency(currency);
+      if (!tenantConf.currencies || tenantConf.currencies.length === 0) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'At least one currency is required',
+        };
+      }
 
-      if (savedCurrency.statusCode === HttpStatus.OK) {
+      const tenant = this.tenantRepo.create({ ...tenantConf, currencies: [] });
+
+      for (const currency of tenantConf.currencies) {
+        const savedCurrency =
+          await this.currencyService.createCurrency(currency);
+
+        if (savedCurrency.statusCode !== HttpStatus.OK) {
+          return {
+            statusCode: savedCurrency.statusCode,
+            message: 'Error creating currency',
+          };
+        }
+
         tenant.currencies.push(savedCurrency.data);
       }
-    }
 
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Created Tenant',
-      data: await this.tenantRepo.save(tenant),
-    };
+      await queryRunner.manager.save(tenant);
+      await this.userService.addTenantToSuperUser(
+        user.id,
+        tenant,
+        queryRunner.manager,
+      );
+      await queryRunner.commitTransaction();
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Created Tenant',
+        data: tenant,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error creating tenant',
+      };
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
