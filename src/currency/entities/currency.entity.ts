@@ -6,7 +6,7 @@ export class Currency {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true, length: 3 })
+  @Column({ length: 3 })
   code: string;
 
   @Column()
