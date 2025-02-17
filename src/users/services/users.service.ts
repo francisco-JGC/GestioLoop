@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { HttpResponse } from 'src/_shared/HttpResponse';
 import * as bcrypt from 'bcrypt';
@@ -70,5 +70,32 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async addTenantToSuperUser(
+    userId: string,
+    tenant: Tenant,
+    entityManager?: EntityManager,
+  ): Promise<HttpResponse> {
+    const user = await this.getUserById(userId);
+
+    if (!user) {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      };
+    }
+
+    user.tenant = tenant;
+
+    const savedUser = entityManager
+      ? await entityManager.save(user)
+      : await this.userRepo.save(user);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Tenant added',
+      data: savedUser,
+    };
   }
 }
