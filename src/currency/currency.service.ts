@@ -17,15 +17,6 @@ export class CurrencyService {
   }
 
   async createCurrency(currency: CreateCurrencyDto): Promise<HttpResponse> {
-    const currencyExist = await this.getCurrencyByCode(currency.code);
-
-    if (!currencyExist) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message: 'you already have a record with this code',
-      };
-    }
-
     const createCurrency = this.currencyRepo.create(currency);
 
     return {
