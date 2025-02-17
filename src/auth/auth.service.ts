@@ -44,9 +44,9 @@ export class AuthService {
 
     if (user.user_type === UserTypes.INTERNAL) {
       tenant = await this.userService.getTenantByUserId(user.id);
+    } else {
+      tenant = await this.externalUserService.getTenantByUserId(user.id);
     }
-
-    tenant = await this.externalUserService.getTenantByUserId(user.id);
 
     const payload = {
       id: user.id,
@@ -54,7 +54,7 @@ export class AuthService {
       username: user.username,
       user_role: user.user_role,
       user_type: user.user_type,
-      tenant,
+      tenantId: tenant?.id ?? null,
     };
 
     return {
