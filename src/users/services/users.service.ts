@@ -58,4 +58,17 @@ export class UsersService {
 
     return user?.tenant;
   }
+
+  async getUserById(id: string): Promise<User | null> {
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: ['tenant'],
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  }
 }
