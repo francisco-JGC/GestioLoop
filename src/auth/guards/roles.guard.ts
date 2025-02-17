@@ -17,7 +17,7 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     const { user } = context.switchToHttp().getRequest();
-    const userRolePriority = UserRole[user.role.toUpperCase()];
+    const userRolePriority = UserRole[user.user_role];
 
     return requiredRoles.some((role) => userRolePriority >= UserRole[role]);
   }
