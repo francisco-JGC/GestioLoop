@@ -13,9 +13,6 @@ export class TenantController {
   @Roles(UserRole.SUPER_ADMIN)
   @Post('configure-tenant')
   async configureTenant(@Req() req) {
-    return this.tenantService.configureTenantByUserId(
-      req.user.userId,
-      req.body,
-    );
+    return this.tenantService.configureTenantByUserId(req.user.id, req.body);
   }
 }
