@@ -39,9 +39,18 @@ export class AuthController {
       sameSite: 'strict',
     });
 
-    res
-      .status(HttpStatus.OK)
-      .send({ message: 'successful login', statusCode: HttpStatus.OK });
+    res.status(HttpStatus.OK).send({
+      message: 'successful login',
+      statusCode: HttpStatus.OK,
+      data: {
+        id: req.user.id,
+        email: req.user.email,
+        username: req.user.username,
+        user_role: req.user.user_role,
+        user_type: req.user.user_type,
+        tenantId: req.user.tenant?.id ?? null,
+      },
+    });
   }
 
   @Post('register')
@@ -102,12 +111,10 @@ export class AuthController {
         statusCode: HttpStatus.OK,
       });
     } catch (e) {
-      return res
-        .status(HttpStatus.UNAUTHORIZED)
-        .send({
-          message: 'Invalid or expired refresh token',
-          statusCode: HttpStatus.UNAUTHORIZED,
-        });
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'Invalid or expired refresh token',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
     }
   }
 }
