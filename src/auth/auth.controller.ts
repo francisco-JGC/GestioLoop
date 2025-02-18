@@ -13,10 +13,14 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -25,7 +29,13 @@ export class AuthController {
 
     res.cookie('token', response.access_token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    res.cookie('refresh_token', response.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
     });
 
@@ -50,7 +60,14 @@ export class AuthController {
   async logout(@Res() res: Response) {
     res.cookie('token', '', {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      expires: new Date(0),
+    });
+
+    res.cookie('refresh_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       expires: new Date(0),
     });
@@ -58,5 +75,39 @@ export class AuthController {
     res
       .status(HttpStatus.OK)
       .send({ message: 'successful logout', statusCode: HttpStatus.OK });
+  }
+
+  @Post('refresh-token')
+  async refreshToken(@Request() req, @Res() res: Response) {
+    const refreshToken = req.cookies['refresh_token'];
+    if (!refreshToken) {
+      return res.status(HttpStatus.UNAUTHORIZED).send({
+        message: 'No refresh token provided',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    try {
+      const user = this.jwtService.verify(refreshToken);
+      const tokens = await this.authService.refreshToken(user);
+
+      res.cookie('token', tokens.access_token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
+      });
+
+      res.status(HttpStatus.OK).send({
+        message: 'Token refreshed',
+        statusCode: HttpStatus.OK,
+      });
+    } catch (e) {
+      return res
+        .status(HttpStatus.UNAUTHORIZED)
+        .send({
+          message: 'Invalid or expired refresh token',
+          statusCode: HttpStatus.UNAUTHORIZED,
+        });
+    }
   }
 }

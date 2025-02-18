@@ -39,7 +39,9 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<{ access_token: string }> {
+  async login(
+    user: User,
+  ): Promise<{ access_token: string; refresh_token: string }> {
     let tenant: Tenant | null;
 
     if (user.user_type === UserTypes.INTERNAL) {
@@ -57,8 +59,12 @@ export class AuthService {
       tenantId: tenant?.id ?? null,
     };
 
+    const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
+      refresh_token,
     };
   }
 
@@ -75,6 +81,33 @@ export class AuthService {
       data: {
         user: user.data,
       },
+    };
+  }
+
+  async refreshToken(
+    user: User | ExternalUser,
+  ): Promise<{ access_token: string }> {
+    let tenant: Tenant | null;
+
+    if (user.user_type === UserTypes.INTERNAL) {
+      tenant = await this.userService.getTenantByUserId(user.id);
+    } else {
+      tenant = await this.externalUserService.getTenantByUserId(user.id);
+    }
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      user_role: user.user_role,
+      user_type: user.user_type,
+      tenantId: tenant?.id ?? null,
+    };
+
+    const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
+
+    return {
+      access_token,
     };
   }
 }
