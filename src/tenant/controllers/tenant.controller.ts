@@ -8,11 +8,11 @@ import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('tenant')
 @Controller('tenant')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.SUPER_ADMIN)
 export class TenantController {
   constructor(private readonly tenantService: TenantService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPER_ADMIN)
   @Post('configure-tenant')
   async configureTenant(@Req() req) {
     return this.tenantService.configureTenantByUserId(req.user.id, req.body);
