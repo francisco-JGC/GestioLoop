@@ -99,4 +99,13 @@ export class TenantService {
       await queryRunner.release();
     }
   }
+
+  async getTenantById(tenantId: string): Promise<Tenant | null> {
+    const tenant = await this.tenantRepo.findOne({
+      where: { id: tenantId },
+      relations: ['user', 'branches', 'tenant_services', 'currencies'],
+    });
+
+    return tenant;
+  }
 }
