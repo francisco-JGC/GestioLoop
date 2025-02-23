@@ -27,18 +27,6 @@ export class Branch {
   @Column({ type: 'varchar', length: 255 })
   address: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  phone_number: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  contact_person: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  contact_person_phone_number: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  contact_person_email: string;
-
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
