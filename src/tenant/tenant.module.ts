@@ -16,5 +16,6 @@ import { UsersModule } from 'src/users/users.module';
   ],
   controllers: [TenantController],
   providers: [TenantService],
+  exports: [TenantService],
 })
 export class TenantModule {}
