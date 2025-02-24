@@ -61,4 +61,13 @@ export class ExternalUsersService {
       data: await this.externalUserRepo.save(user),
     };
   }
+
+  async getBranch(userId: string): Promise<Branch | null> {
+    const user = await this.externalUserRepo.findOne({
+      where: { id: userId },
+      relations: ['branch'],
+    });
+
+    return user?.branch ?? null;
+  }
 }
