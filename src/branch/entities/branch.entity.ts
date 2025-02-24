@@ -19,7 +19,7 @@ export class Branch {
   tenant: Tenant;
 
   @OneToMany(() => ExternalUser, (externalUser) => externalUser.branch)
-  external_user: ExternalUser[];
+  external_users: ExternalUser[];
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
