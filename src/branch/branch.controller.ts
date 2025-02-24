@@ -8,11 +8,11 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @ApiTags('branch')
 @Controller('branch')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.SUPER_ADMIN)
 export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('configure-branch')
   async configureBranch(@Req() req) {
     return this.branchService.configureBranch(req.user.tenantId, req.body);
@@ -23,6 +23,8 @@ export class BranchController {
     return this.branchService.getBranches(req.user.tenantId);
   }
 
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('create-external-user')
   async createExternalUserToBranch(@Req() req) {
     const branchId = req.headers?.['x-branch-id'];
