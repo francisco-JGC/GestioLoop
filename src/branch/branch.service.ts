@@ -5,6 +5,8 @@ import { Branch } from './entities/branch.entity';
 import { DataSource, Repository } from 'typeorm';
 import { TenantService } from 'src/tenant/services/tenant.service';
 import { HttpResponse } from 'src/_shared/HttpResponse';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ExternalUsersService } from 'src/users/services/external-user.service';
 
 @Injectable()
 export class BranchService {
@@ -13,6 +15,7 @@ export class BranchService {
     private readonly branchRepo: Repository<Branch>,
 
     private tenantService: TenantService,
+    private externalUsersService: ExternalUsersService,
     private dataSoruce: DataSource,
   ) {}
 
@@ -59,11 +62,64 @@ export class BranchService {
 
   async getBranches(tenantId: string): Promise<Branch[] | null> {
     return await this.branchRepo.find({
-      where: { tenant: { id: tenantId } },
       relations: ['tenant', 'external_users'],
       order: {
         created_at: 'DESC',
       },
     });
+  }
+
+  async createExternalUserToBranch(
+    branchId: string,
+    createUserDto: CreateUserDto,
+  ): Promise<HttpResponse> {
+    const branch = await this.branchRepo.findOne({
+      where: { id: branchId },
+      relations: ['external_users'],
+    });
+
+    if (!branch) {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Branch not found',
+      };
+    }
+
+    const usernameExist = branch.external_users.find(
+      (user) => user.username === createUserDto.username,
+    );
+
+    if (usernameExist) {
+      return {
+        statusCode: HttpStatus.CONFLICT,
+        message: 'this username already exists',
+      };
+    }
+
+    const exmailExist = branch.external_users.find(
+      (user) => user.email === createUserDto.email,
+    );
+
+    if (exmailExist) {
+      return {
+        statusCode: HttpStatus.CONFLICT,
+        message: 'this email already exists',
+      };
+    }
+
+    const externalUser =
+      await this.externalUsersService.createUser(createUserDto);
+
+    if (externalUser.statusCode !== HttpStatus.OK) {
+      return externalUser;
+    }
+
+    branch.external_users.push(externalUser.data);
+
+    return {
+      message: 'OK',
+      statusCode: HttpStatus.OK,
+      data: await this.branchRepo.save(branch),
+    };
   }
 }

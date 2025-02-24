@@ -22,4 +22,10 @@ export class BranchController {
   async getBranches(@Req() req) {
     return this.branchService.getBranches(req.user.tenantId);
   }
+
+  @Post('create-external-user')
+  async createExternalUserToBranch(@Req() req) {
+    const branchId = req.headers?.['x-branch-id'];
+    return this.branchService.createExternalUserToBranch(branchId, req.body);
+  }
 }
