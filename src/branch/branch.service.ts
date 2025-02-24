@@ -127,4 +127,10 @@ export class BranchService {
       data: branch,
     };
   }
+
+  async getBranchByExternalUser(
+    externalUserId: string,
+  ): Promise<Branch | null> {
+    return await this.externalUsersServices.getBranch(externalUserId);
+  }
 }
