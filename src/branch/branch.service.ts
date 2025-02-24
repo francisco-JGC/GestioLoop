@@ -56,4 +56,11 @@ export class BranchService {
       data: newBranch,
     };
   }
+
+  async getBranches(tenantId: string): Promise<Branch[] | null> {
+    return await this.branchRepo.find({
+      where: { tenant: { id: tenantId } },
+      relations: ['tenant', 'external_users'],
+    });
+  }
 }
