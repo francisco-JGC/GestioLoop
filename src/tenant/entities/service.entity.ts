@@ -12,10 +12,13 @@ export class Service {
   @Column('text')
   description: string;
 
+  @Column({ type: 'jsonb', nullable: false })
+  features: Array<{ title: string; items: string[] }>;
+
   @Column({ default: true })
   is_active: boolean;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @OneToMany(() => TenantService, (tenantService) => tenantService.service)
