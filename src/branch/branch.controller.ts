@@ -18,9 +18,17 @@ export class BranchController {
     return this.branchService.configureBranch(req.user.tenantId, req.body);
   }
 
+  @Roles(UserRole.STAFF)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('branches')
   async getBranches(@Req() req) {
-    return this.branchService.getBranches(req.user.tenantId);
+    const { user_type, id } = req.user;
+
+    if (user_type === 'internal')
+      return this.branchService.getBranches(req.user.tenantId);
+
+    const branch = await this.branchService.getBranchByExternalUser(id);
+    return branch ? [branch] : null;
   }
 
   @Roles(UserRole.ADMIN)
