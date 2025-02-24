@@ -26,6 +26,10 @@ export class BranchController {
   @Post('create-external-user')
   async createExternalUserToBranch(@Req() req) {
     const branchId = req.headers?.['x-branch-id'];
-    return this.branchService.createExternalUserToBranch(branchId, req.body);
+    return this.branchService.createExternalUserToBranch(
+      branchId,
+      req.user.id,
+      req.body,
+    );
   }
 }

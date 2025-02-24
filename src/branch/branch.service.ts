@@ -7,6 +7,7 @@ import { TenantService } from 'src/tenant/services/tenant.service';
 import { HttpResponse } from 'src/_shared/HttpResponse';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ExternalUsersService } from 'src/users/services/external-user.service';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class BranchService {
@@ -15,7 +16,8 @@ export class BranchService {
     private readonly branchRepo: Repository<Branch>,
 
     private tenantService: TenantService,
-    private externalUsersService: ExternalUsersService,
+    private externalUsersServices: ExternalUsersService,
+    private userServices: UsersService,
     private dataSoruce: DataSource,
   ) {}
 
@@ -71,11 +73,12 @@ export class BranchService {
 
   async createExternalUserToBranch(
     branchId: string,
+    userId: string,
     createUserDto: CreateUserDto,
   ): Promise<HttpResponse> {
     const branch = await this.branchRepo.findOne({
       where: { id: branchId },
-      relations: ['external_users'],
+      relations: ['external_users', 'tenant', 'tenant.user'],
     });
 
     if (!branch) {
@@ -108,18 +111,20 @@ export class BranchService {
     }
 
     const externalUser =
-      await this.externalUsersService.createUser(createUserDto);
+      await this.externalUsersServices.createUser(createUserDto);
 
     if (externalUser.statusCode !== HttpStatus.OK) {
       return externalUser;
     }
 
     branch.external_users.push(externalUser.data);
+    await this.branchRepo.save(branch);
+    await this.userServices.addExternalUser(userId, externalUser.data);
 
     return {
       message: 'OK',
       statusCode: HttpStatus.OK,
-      data: await this.branchRepo.save(branch),
+      data: branch,
     };
   }
 }
