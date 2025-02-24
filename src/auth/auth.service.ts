@@ -41,7 +41,7 @@ export class AuthService {
 
   async login(
     user: User,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string; payload: any }> {
     let tenant: Tenant | null;
 
     if (user.user_type === UserTypes.INTERNAL) {
@@ -65,6 +65,7 @@ export class AuthService {
     return {
       access_token,
       refresh_token,
+      payload,
     };
   }
 

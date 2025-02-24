@@ -42,14 +42,7 @@ export class AuthController {
     res.status(HttpStatus.OK).send({
       message: 'successful login',
       statusCode: HttpStatus.OK,
-      data: {
-        id: req.user.id,
-        email: req.user.email,
-        username: req.user.username,
-        user_role: req.user.user_role,
-        user_type: req.user.user_type,
-        tenantId: req.user.tenant?.id ?? null,
-      },
+      data: response.payload,
     });
   }
 
