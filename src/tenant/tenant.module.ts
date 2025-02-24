@@ -7,6 +7,8 @@ import { Tenant } from './entities/tenant.entity';
 import { TenantService as TenantServiceEntity } from './entities/tenant-service.entity';
 import { CurrencyModule } from 'src/currency/currency.module';
 import { UsersModule } from 'src/users/users.module';
+import { ServiceService } from './services/service.service';
+import { ServiceInitializerService } from './services/service.initializer.service';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
   ],
   controllers: [TenantController],
-  providers: [TenantService],
+  providers: [TenantService, ServiceService, ServiceInitializerService],
   exports: [TenantService],
 })
 export class TenantModule {}
