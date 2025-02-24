@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Inventory",
+    "description": "Optimize your stock, avoid losses, and make smart decisions with our advanced inventory management solution.",
+    "features": [
+      {
+        "title": "Complete Product Management",
+        "items": [
+          "Product registration with SKU code, barcode, and QR code.",
+          "Classification by categories and subcategories for better organization.",
+          "Support for multiple suppliers per product.",
+          "Dynamic pricing and costs with automatic margin calculation.",
+          "Custom measurement units (Kg, Liters, Units, etc.).",
+          "Image gallery and detailed technical sheets."
+        ]
+      },
+      {
+        "title": "Smart Stock Control",
+        "items": [
+          "Real-time updates on stock entries and exits.",
+          "Automatic alerts for low stock, overstock, or expirations.",
+          "Management of multiple warehouses with individual control.",
+          "Detailed inventory adjustment records (shrinkage, theft, returns).",
+          "Movement history with user, date, and reason for the change.",
+          "Unique stock codes for precise traceability."
+        ]
+      },
+      {
+        "title": "Cost and Price Optimization",
+        "items": [
+          "Automatic calculation of average cost and profitability.",
+          "Custom price lists.",
+          "Volume discounts or promotions with scheduled duration.",
+          "Application of custom taxes (VAT).",
+          "Price change history with user control."
+        ]
+      },
+      {
+        "title": "Advanced Reporting and Analytics",
+        "items": [
+          "Real-time reports on stock, costs, and sales.",
+          "Best-selling products and low-turnover items to optimize purchases.",
+          "Profitability analysis to maximize margins.",
+          "Purchase and sales history by product and supplier.",
+          "Data export in Excel, PDF, and CSV."
+        ]
+      },
+      {
+        "title": "Security and Access Control",
+        "items": [
+          "Customizable user profiles (Administrator, Warehouse, Sales, Auditor).",
+          "Audit log with a history of modifications.",
+          "Locking of products and warehouses to prevent errors."
+        ]
+      }
+    ]
+  }
+]
