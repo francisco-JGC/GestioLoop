@@ -6,6 +6,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { HttpResponse } from 'src/_shared/HttpResponse';
 import * as bcrypt from 'bcrypt';
 import { Tenant } from 'src/tenant/entities/tenant.entity';
+import { ExternalUser } from '../entities/external-user.entity';
 
 @Injectable()
 export class UsersService {
@@ -62,7 +63,7 @@ export class UsersService {
   async getUserById(id: string): Promise<User | null> {
     const user = await this.userRepo.findOne({
       where: { id },
-      relations: ['tenant'],
+      relations: ['tenant', 'external_users'],
     });
 
     if (!user) {
@@ -96,6 +97,28 @@ export class UsersService {
       statusCode: HttpStatus.OK,
       message: 'Tenant added',
       data: savedUser,
+    };
+  }
+
+  async addExternalUser(
+    userId: string,
+    externalUser: ExternalUser,
+  ): Promise<HttpResponse> {
+    const user = await this.getUserById(userId);
+
+    if (!user) {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      };
+    }
+
+    user.external_users.push(externalUser);
+
+    return {
+      message: 'Added External User',
+      statusCode: HttpStatus.OK,
+      data: await this.userRepo.save(user),
     };
   }
 }
