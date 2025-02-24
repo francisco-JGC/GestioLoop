@@ -61,6 +61,9 @@ export class BranchService {
     return await this.branchRepo.find({
       where: { tenant: { id: tenantId } },
       relations: ['tenant', 'external_users'],
+      order: {
+        created_at: 'DESC',
+      },
     });
   }
 }
