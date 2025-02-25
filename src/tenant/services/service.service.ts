@@ -30,4 +30,8 @@ export class ServiceService {
 
     return services;
   }
+
+  async getServices(): Promise<Service[]> {
+    return await this.serviceRepo.find();
+  }
 }

@@ -9,6 +9,7 @@ import { CurrencyModule } from 'src/currency/currency.module';
 import { UsersModule } from 'src/users/users.module';
 import { ServiceService } from './services/service.service';
 import { ServiceInitializerService } from './services/service.initializer.service';
+import { ServicesController } from './controllers/service.controller';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ServiceInitializerService } from './services/service.initializer.servic
     CurrencyModule,
     UsersModule,
   ],
-  controllers: [TenantController],
+  controllers: [TenantController, ServicesController],
   providers: [TenantService, ServiceService, ServiceInitializerService],
   exports: [TenantService],
 })
