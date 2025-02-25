@@ -133,4 +133,26 @@ export class BranchService {
   ): Promise<Branch | null> {
     return await this.externalUsersServices.getBranch(externalUserId);
   }
+
+  async updateBranch(branch: Branch): Promise<HttpResponse> {
+    const branchFound = await this.branchRepo.findOne({
+      where: { id: branch.id },
+    });
+
+    if (!branchFound) {
+      return {
+        message: 'Branch not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      };
+    }
+
+    Object.assign(branchFound, branch);
+    await this.branchRepo.save(branchFound);
+
+    return {
+      message: 'Branch updated successfully',
+      statusCode: HttpStatus.OK,
+      data: branchFound,
+    };
+  }
 }
