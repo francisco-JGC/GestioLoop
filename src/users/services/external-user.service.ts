@@ -88,7 +88,7 @@ export class ExternalUsersService {
       };
     }
 
-    if (!tenant.user) {
+    if (!tenant.user?.[0]) {
       return {
         message: 'User not found for this tenant',
         statusCode: HttpStatus.NOT_FOUND,
@@ -96,7 +96,7 @@ export class ExternalUsersService {
     }
 
     const [external_users, total] = await this.externalUserRepo.findAndCount({
-      where: { user: { id: tenant.user.id } },
+      where: { user: { id: tenant.user?.[0].id } },
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
       order: { created_at: 'DESC' },
