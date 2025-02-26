@@ -101,9 +101,19 @@ export class TenantService {
   }
 
   async getTenantById(tenantId: string): Promise<Tenant | null> {
+    if (!tenantId) {
+      return null;
+    }
+
     const tenant = await this.tenantRepo.findOne({
       where: { id: tenantId },
-      relations: ['user', 'branches', 'tenant_services', 'currencies'],
+      relations: [
+        'user',
+        'user.external_users',
+        'branches',
+        'tenant_services',
+        'currencies',
+      ],
     });
 
     return tenant;
