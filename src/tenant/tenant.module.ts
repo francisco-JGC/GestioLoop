@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TenantService } from './services/tenant.service';
 import { TenantController } from './controllers/tenant.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,7 +15,7 @@ import { ServicesController } from './controllers/service.controller';
   imports: [
     TypeOrmModule.forFeature([Service, Tenant, TenantServiceEntity]),
     CurrencyModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [TenantController, ServicesController],
   providers: [TenantService, ServiceService, ServiceInitializerService],
