@@ -155,4 +155,24 @@ export class BranchService {
       data: branchFound,
     };
   }
+
+  async changeStatusBranch(branchId: string): Promise<HttpResponse> {
+    const branch = await this.branchRepo.findOne({ where: { id: branchId } });
+
+    if (!branch) {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Branch not found',
+      };
+    }
+
+    branch.status = !branch.status;
+    await this.branchRepo.save(branch);
+
+    return {
+      message: 'OK',
+      statusCode: HttpStatus.OK,
+      data: branch,
+    };
+  }
 }

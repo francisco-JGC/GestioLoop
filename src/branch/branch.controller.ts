@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { BranchService } from './branch.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserRole } from 'src/_shared/constants/user-types.enums';
@@ -48,5 +57,12 @@ export class BranchController {
   @Put('update-branch')
   async updateBranch(@Req() req) {
     return this.branchService.updateBranch(req.body);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':id/status')
+  async changeStatus(@Param('id') id: string) {
+    return this.branchService.changeStatusBranch(id);
   }
 }
