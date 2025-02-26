@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ExternalUser } from '../entities/external-user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,12 +7,15 @@ import { Branch } from 'src/branch/entities/branch.entity';
 import { HttpResponse } from 'src/_shared/HttpResponse';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { TenantService } from 'src/tenant/services/tenant.service';
 
 @Injectable()
 export class ExternalUsersService {
   constructor(
     @InjectRepository(ExternalUser)
     private readonly externalUserRepo: Repository<ExternalUser>,
+
+    private readonly tenantService: TenantService,
   ) {}
 
   async findExternalUserByUsername(
@@ -69,5 +72,46 @@ export class ExternalUsersService {
     });
 
     return user?.branch ?? null;
+  }
+
+  async getPaginatedUsers(
+    tenantId: string,
+    pageNumber: number,
+    pageSize: number,
+  ) {
+    const tenant = await this.tenantService.getTenantById(tenantId);
+
+    if (!tenant) {
+      return {
+        message: 'Tenant not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      };
+    }
+
+    if (!tenant.user) {
+      return {
+        message: 'User not found for this tenant',
+        statusCode: HttpStatus.NOT_FOUND,
+      };
+    }
+
+    const [external_users, total] = await this.externalUserRepo.findAndCount({
+      where: { user: { id: tenant.user.id } },
+      take: pageSize,
+      skip: (pageNumber - 1) * pageSize,
+      order: { created_at: 'DESC' },
+    });
+
+    return {
+      message: 'OK',
+      statusCode: HttpStatus.OK,
+      data: {
+        current_page: pageNumber,
+        page_size: pageSize,
+        total_users: total,
+        total_pages: Math.ceil(total / pageSize),
+        external_users,
+      },
+    };
   }
 }
