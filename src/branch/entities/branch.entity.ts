@@ -27,6 +27,9 @@ export class Branch {
   @Column({ type: 'varchar', length: 255 })
   address: string;
 
+  @Column({ default: true })
+  status: boolean;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
