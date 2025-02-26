@@ -11,14 +11,14 @@ export abstract class BaseUser extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ default: '' })
+  image_url: string;
+
   @Column({ type: 'varchar', length: 255 })
   username: string;
 
   @Column({ type: 'varchar' })
   phone_number: string;
-
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  dni: string;
 
   @Column({ type: 'varchar', length: 255 })
   password_hash: string;

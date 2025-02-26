@@ -100,6 +100,7 @@ export class ExternalUsersService {
       take: pageSize,
       skip: (pageNumber - 1) * pageSize,
       order: { created_at: 'DESC' },
+      relations: ['branch'],
     });
 
     return {
