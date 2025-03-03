@@ -88,28 +88,6 @@ export class BranchService {
       };
     }
 
-    const usernameExist = branch.external_users.find(
-      (user) => user.username === createUserDto.username,
-    );
-
-    if (usernameExist) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message: 'this username already exists',
-      };
-    }
-
-    const exmailExist = branch.external_users.find(
-      (user) => user.email === createUserDto.email,
-    );
-
-    if (exmailExist) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message: 'this email already exists',
-      };
-    }
-
     const externalUser =
       await this.externalUsersServices.createUser(createUserDto);
 
