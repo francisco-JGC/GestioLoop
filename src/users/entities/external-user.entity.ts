@@ -9,6 +9,9 @@ export class ExternalUser extends BaseUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ default: '' })
+  real_name: string;
+
   @ManyToOne(() => User, (user) => user.external_users)
   user: User;
 

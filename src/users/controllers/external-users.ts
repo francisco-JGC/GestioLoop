@@ -37,4 +37,11 @@ export class ExternalUsersController {
       pageSize,
     );
   }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('create')
+  async createUser(@Req() req) {
+    return this.externalUsaerService.createUser(req.body);
+  }
 }

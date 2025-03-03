@@ -42,7 +42,10 @@ export class ExternalUsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<HttpResponse> {
     const userFound = await this.externalUserRepo.findOne({
-      where: { email: createUserDto.email },
+      where: [
+        { email: createUserDto.email },
+        { username: createUserDto.username },
+      ],
     });
 
     if (userFound) {
