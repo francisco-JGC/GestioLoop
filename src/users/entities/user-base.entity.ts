@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { UserRole, UserTypes } from 'src/_shared/constants/user-types.enums';
 
-export abstract class BaseUser extends BaseEntity {
+export abstract class UserBase extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

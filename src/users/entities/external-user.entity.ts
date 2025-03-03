@@ -2,10 +2,10 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { User } from './user.entity';
 import { Branch } from 'src/branch/entities/branch.entity';
 import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
-import { BaseUser } from './base-user.entity';
+import { UserBase } from './user-base.entity';
 
 @Entity('external_users')
-export class ExternalUser extends BaseUser {
+export class ExternalUser extends UserBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

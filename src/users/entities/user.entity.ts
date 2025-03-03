@@ -9,10 +9,10 @@ import {
 import { Tenant } from 'src/tenant/entities/tenant.entity';
 import { ExternalUser } from './external-user.entity';
 import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
-import { BaseUser } from './base-user.entity';
+import { UserBase } from './user-base.entity';
 
 @Entity('users')
-export class User extends BaseUser {
+export class User extends UserBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
