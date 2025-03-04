@@ -9,11 +9,8 @@ export class Service {
   @Column({ unique: true })
   name: string;
 
-  @Column('text')
-  description: string;
-
-  @Column({ type: 'jsonb', nullable: false })
-  features: Array<{ title: string; items: string[] }>;
+  @Column({ type: 'float' })
+  price: number;
 
   @Column({ default: true })
   is_active: boolean;
