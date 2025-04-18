@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  DeleteDateColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Branch } from 'src/branch/entities/branch.entity';
 import { UserRole, UserTypes } from '../../_shared/constants/user-types.enums';
@@ -31,4 +37,7 @@ export class ExternalUser extends UserBase {
     default: UserTypes.EXTERNAL,
   })
   user_type: UserTypes.EXTERNAL;
+
+  @DeleteDateColumn()
+  deleted_at?: Date;
 }
