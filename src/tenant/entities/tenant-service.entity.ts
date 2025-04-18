@@ -16,6 +16,6 @@ export class TenantService {
   @Column({ default: true })
   is_active: boolean;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 }
