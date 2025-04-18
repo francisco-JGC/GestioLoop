@@ -112,6 +112,7 @@ export class TenantService {
         'user.external_users',
         'branches',
         'tenant_services',
+        'tenant_services.service',
         'currencies',
       ],
     });
