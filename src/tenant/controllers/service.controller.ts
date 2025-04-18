@@ -15,4 +15,14 @@ export class ServicesController {
   async getServices() {
     return this.serviceService.getServices();
   }
+
+  @Post('hire')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPER_ADMIN)
+  async hireService(@Req() req: any) {
+    const { user } = req;
+    const { serviceId } = req.body;
+
+    return this.serviceService.hireServiceById(user.tenantId, serviceId);
+  }
 }
