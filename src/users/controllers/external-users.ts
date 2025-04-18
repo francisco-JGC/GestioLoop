@@ -44,4 +44,13 @@ export class ExternalUsersController {
   async createUser(@Req() req) {
     return this.externalUsaerService.createUser(req.body);
   }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('soft-delete-user')
+  async softDeleteUser(@Req() req) {
+    const { userId } = req.body;
+
+    return this.externalUsaerService.softDeleteUser(userId);
+  }
 }

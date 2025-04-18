@@ -81,7 +81,7 @@ export class ExternalUsersService {
     tenantId: string,
     pageNumber: number,
     pageSize: number,
-  ) {
+  ): Promise<HttpResponse> {
     const tenant = await this.tenantService.getTenantById(tenantId);
 
     if (!tenant) {
@@ -117,5 +117,20 @@ export class ExternalUsersService {
         external_users,
       },
     };
+  }
+
+  async softDeleteUser(externalUserId: string): Promise<HttpResponse> {
+    try {
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'OK',
+        data: await this.externalUserRepo.softDelete(externalUserId),
+      };
+    } catch (e) {
+      return {
+        message: e.message,
+        statusCode: HttpStatus.BAD_REQUEST,
+      };
+    }
   }
 }
